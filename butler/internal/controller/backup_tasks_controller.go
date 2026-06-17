@@ -2,19 +2,24 @@ package controller
 
 import (
 	"butler/internal/dto"
-	"strconv"
+	"butler/internal/pkg"
+	"butler/internal/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 //查询备份任务列表
-func listTasks(c *gin.Context) {
+func ListTasks(c *gin.Context) error {
 	var req dto.ListTasksReq
-	req.TaskName = c.Param("taskName");
-	pageNum, err := strconv.Atoi(c.Request.PathValue("pageNum"));
-	if (err != nil) {
-		
+	err := c.ShouldBindQuery(&req)
+	if (err!=nil) {
+		return pkg.BadArgumentsError(err.Error())
 	}
-	req.PageNum = pageNum
-
+	resp, err := service.ListTasks(&req);
+	if (err!= nil) {
+		return err
+	}
+	c.JSON(http.StatusOK, resp)
+	return nil
 }
