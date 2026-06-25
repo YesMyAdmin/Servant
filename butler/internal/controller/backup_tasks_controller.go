@@ -9,6 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+// 新建备份任务
+func NewTask(c *gin.Context) error {
+	var req dto.NewBackupTaskReq
+	err := c.ShouldBindBodyWithJSON(&req)
+	if (err!=nil) {
+		return pkg.BadArgumentsError(err.Error())
+	}
+	err = service.NewBackupTask(&req)
+	if (nil != err) {
+		return err
+	}
+	c.JSON(http.StatusOK, pkg.SuccessMessageResp(""))
+	return nil
+}
+
 //查询备份任务列表
 func ListTasks(c *gin.Context) error {
 	var req dto.ListTasksReq
@@ -23,3 +39,4 @@ func ListTasks(c *gin.Context) error {
 	c.JSON(http.StatusOK, resp)
 	return nil
 }
+

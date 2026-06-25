@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -17,14 +18,6 @@ type PageableReq struct {
 type HttpResp struct {
 	Status int `json:"status"`
 	Msg string `json:"msg,omitempty"`
-}
-
-//成功返回体
-func SuccessResp(msg string) HttpResp {
-	return HttpResp{
-		Status: http.StatusOK,
-		Msg: msg,
-	}
 }
 
 //数据返回体
@@ -47,4 +40,18 @@ type PageableResp[C any] struct {
 	Total int `json:"total"`
 	Pages int `json:"pages"`
 	Contents []C `json:"contents,omitempty"`
+}
+
+//成功消息返回体
+func SuccessMessageResp(userName string) HttpResp {
+	var returnUserName string
+	if (userName != "") {
+		returnUserName = userName
+	} else {
+		returnUserName = "admin"
+	}
+	return HttpResp{
+		Status: http.StatusOK,
+		Msg: fmt.Sprintf("Yes, my %s.", returnUserName),
+	}
 }

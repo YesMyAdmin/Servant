@@ -8,6 +8,11 @@ import (
 	"math"
 )
 
+//新建备份定时任务
+func NewBackupTask(req *dto.NewBackupTaskReq) error {
+	return nil
+}
+
 // 查询定时任务
 func ListTasks(req *dto.ListTasksReq) (*pkg.PageableResp[dto.ListTasksResp], error) {
 	tasks, total, err := repository.ListTasks(req.PageNum, req.PageSize, req.TaskName)
