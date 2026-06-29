@@ -2,14 +2,20 @@ package service
 
 import (
 	"butler/internal/dto"
-	"butler/internal/model"
 	"butler/internal/pkg"
 	"butler/internal/repository"
 	"math"
+	"time"
 )
+
+
+
+
 
 //新建备份定时任务
 func NewBackupTask(req *dto.NewBackupTaskReq) error {
+
+	repository.NewBackupTask(nil)
 	return nil
 }
 
@@ -33,19 +39,4 @@ func ListTasks(req *dto.ListTasksReq) (*pkg.PageableResp[dto.ListTasksResp], err
 		Pages:    pages,
 		Contents: contents,
 	}, nil
-}
-
-// modelToDto 将数据库模型转换为响应 DTO
-func modelToDto(t model.BackupTaskPO) dto.ListTasksResp {
-	return dto.ListTasksResp{
-		FileId:         t.FileId,
-		MaidId:         t.MaidId,
-		MaidName:       t.MaidName,
-		OriginalPath:   t.OriginalPath,
-		FileSize:       t.FileSize,
-		FileModifyTime: t.FileModifyTime,
-		VersionHash:    t.VersionHash,
-		RecordTime:     t.RecordTime,
-		UpdateTime:     t.UpdateTime,
-	}
 }
