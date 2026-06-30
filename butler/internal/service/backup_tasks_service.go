@@ -1,16 +1,12 @@
 package service
 
 import (
-	"butler/internal/dto"
+	"butler/internal/model/dto"
+	"butler/internal/model/entity"
 	"butler/internal/pkg"
 	"butler/internal/repository"
 	"math"
-	"time"
 )
-
-
-
-
 
 //新建备份定时任务
 func NewBackupTask(req *dto.NewBackupTaskReq) error {
@@ -29,7 +25,9 @@ func ListTasks(req *dto.ListTasksReq) (*pkg.PageableResp[dto.ListTasksResp], err
 	// 模型转 DTO
 	contents := make([]dto.ListTasksResp, 0, len(tasks))
 	for _, t := range tasks {
-		contents = append(contents, modelToDto(t))
+		taskEntity := entity.Load(&t)
+		resp := entity.DumpListTasksResp(taskEntity)
+		contents = append(contents, *resp)
 	}
 
 	pages := int(math.Ceil(float64(total) / float64(req.PageSize)))

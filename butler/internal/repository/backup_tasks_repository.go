@@ -2,11 +2,12 @@ package repository
 
 import (
 	"butler/internal/database"
+	"butler/internal/model/po"
 )
 
 // ListTasks 分页查询备份任务，支持按任务名称模糊搜索
-func ListTasks(pageNum, pageSize int, taskName string) ([]model.BackupTaskPO, int64, error) {
-	db := database.DB.Model(&model.BackupTaskPO{})
+func ListTasks(pageNum, pageSize int, taskName string) ([]po.BackupTaskPO, int64, error) {
+	db := database.DB.Model(&po.BackupTaskPO{})
 
 	// 按名称模糊搜索
 	if taskName != "" {
@@ -20,7 +21,7 @@ func ListTasks(pageNum, pageSize int, taskName string) ([]model.BackupTaskPO, in
 	}
 
 	// 分页查询
-	var tasks []model.BackupTaskPO
+	var tasks []po.BackupTaskPO
 	offset := (pageNum - 1) * pageSize
 	if err := db.Offset(offset).Limit(pageSize).Find(&tasks).Error; err != nil {
 		return nil, 0, err
@@ -30,8 +31,8 @@ func ListTasks(pageNum, pageSize int, taskName string) ([]model.BackupTaskPO, in
 }
 
 // 添加新的备份任务
-func NewBackupTask(backupTask *model.BackupTaskPO) error {
-	db := database.DB.Model(&model.BackupTaskPO{})
+func NewBackupTask(backupTask *po.BackupTaskPO) error {
+	db := database.DB.Model(&po.BackupTaskPO{})
 	err := db.Create(backupTask).Error
 	if (err != nil) {
 		return err

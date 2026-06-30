@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"butler/internal/dto"
+	"butler/internal/model/dto"
 	"butler/internal/pkg"
 	"butler/internal/service"
 	"net/http"
