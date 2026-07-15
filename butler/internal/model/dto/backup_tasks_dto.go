@@ -29,6 +29,32 @@ type NewBackupTaskReq struct {
 	Dumps []int64 `json:"dumps" binding:"required,min=1"`
 }
 
+// 修改备份任务请求
+type EditBackupTaskReq struct {
+	// TaskId 任务ID
+	TaskId uint64 `json:"taskId" binding:"required"`
+	// MaidId 负责执行任务的女仆节点ID
+	MaidId int64 `json:"maidId" binding:"required"`
+
+	// TaskName 备份任务名称
+	TaskName string `json:"taskName" binding:"required"`
+
+	// Mode 备份模式: full-全量, incremental-增量
+	Mode BackupMode `json:"mode" binding:"required,oneof=full incremental"`
+
+	// 执行备份的cron表达式
+	Cron string `json:"cron" binding:"required"`
+
+	// Source 需要备份的文件/文件夹路径
+	Source string `json:"source" binding:"required"`
+
+	// Enabled 任务开关，默认false(关闭)
+	Enabled bool `json:"enabled" default:"false"`
+
+	// Dumps 文件存储方式ID列表
+	Dumps []int64 `json:"dumps" binding:"required,min=1"`
+}
+
 // BackupMode 备份模式枚举
 type BackupMode string
 

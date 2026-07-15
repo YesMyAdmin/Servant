@@ -1,0 +1,53 @@
+package repository
+
+import (
+	"butler/internal/model/po"
+	"butler/internal/database"
+)	
+
+// ListBackupFiles 分页查询备份文件记录，支持按文件ID模糊搜索
+func ListBackupFiles(fileName string, pageNum, pageSize int) ([]po.BackupRecordPO, int64, error) {
+	db := database.DB.Model(&po.BackupRecordPO{})
+
+	// 按名称模糊搜索
+	if fileName != "" {
+		db = db.Where("instr(file_name, ?)", fileName)
+	}
+
+	// 先查询总数
+	var total int64
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	var records []po.BackupRecordPO
+	offset := (pageNum - 1) * pageSize
+	if err := db.Offset(offset).Limit(pageSize).Find(&records).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return records, total, nil
+}
+
+
+// ListRecordsByFileId 查询某个文件的备份记录
+func ListRecordsByFileId(fileId uint64) ([]po.BackupRecordPO, error) {
+	db := database.DB.Model(&po.BackupRecordPO{})
+	var records []po.BackupRecordPO
+	err := db.Where("file_id = ?", fileId).Find(&records).Error
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
+}
+
+// DeleteBackupRecord 删除备份记录
+func DeleteBackupRecord(backupRecordId uint64) error {
+	db := database.DB.Model(&po.BackupRecordPO{})
+	err := db.Where("backup_record_id = ?", backupRecordId).Delete(&po.BackupRecordPO{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

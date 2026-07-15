@@ -3,6 +3,7 @@ package repository
 import (
 	"butler/internal/database"
 	"butler/internal/model/po"
+	"time"
 )
 
 // ListTasks 分页查询备份任务，支持按任务名称模糊搜索
@@ -35,6 +36,36 @@ func NewBackupTask(backupTask *po.BackupTaskPO) error {
 	db := database.DB.Model(&po.BackupTaskPO{})
 	err := db.Create(backupTask).Error
 	if (err != nil) {
+		return err
+	}
+	return nil
+}
+
+// 更新备份任务
+func EditBackupTask(backupTask *po.BackupTaskPO) error {
+	db := database.DB.Model(&po.BackupTaskPO{})
+	err := db.Where("task_id = ?", backupTask.TaskId).Updates(backupTask).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 切换备份任务启用状态
+func SwitchBackupTask(taskId uint64, enabled bool) error {
+	db := database.DB.Model(&po.BackupTaskPO{})
+	err := db.Where("task_id = ?", taskId).UpdateColumn("enabled", enabled).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 删除备份任务(软删除)
+func DeleteBackupTask(taskId uint64) error {
+	db := database.DB.Model(&po.BackupTaskPO{})
+	err := db.Where("task_id = ?", taskId).UpdateColumn("delete_time", time.Now()).Error
+	if err != nil {
 		return err
 	}
 	return nil
