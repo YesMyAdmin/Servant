@@ -16,8 +16,8 @@ type BackupRecordPO struct {
 	VersionHash          uint64     `gorm:"column:version_hash;not null;comment:文件版本hash,由xxhash64生成" json:"versionHash"`
 	DumpId               uint64     `gorm:"column:dump_id;not null;comment:转储位置id" json:"dumpId"`
 	ExpireTime           time.Time  `gorm:"column:expire_time;not null;comment:过期时间" json:"expireTime"`
-	FileActualDeletedTime *time.Time `gorm:"column:file_actual_deleted_time;default:null;comment:文件删除时间(留空为未删除,有时间为已删除)" json:"fileActualDeletedTime"`
-	DeletedTime          *time.Time `gorm:"column:deleted_time;default:null;comment:删除时间(留空为未删除,有时间为软删除)" json:"deletedTime"`
+	FileActualDeletedTime time.Time `gorm:"column:file_actual_deleted_time;default:null;comment:文件删除时间(留空为未删除,有时间为已删除)" json:"fileActualDeletedTime"`
+	DeletedTime          time.Time `gorm:"column:deleted_time;default:null;comment:删除时间(留空为未删除,有时间为软删除)" json:"deletedTime"`
 	CreateTime           time.Time  `gorm:"column:create_time;not null;default:CURRENT_TIMESTAMP;comment:记录创建时间" json:"createTime"`
 	OwnerId              uint64     `gorm:"column:owner_id;not null;comment:所有者id(默认创建者)" json:"ownerId"`
 	UpdateTime           time.Time  `gorm:"column:update_time;not null;default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;comment:记录修改时间" json:"updateTime"`

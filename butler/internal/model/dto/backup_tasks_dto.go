@@ -32,7 +32,7 @@ type NewBackupTaskReq struct {
 // 修改备份任务请求
 type EditBackupTaskReq struct {
 	// TaskId 任务ID
-	TaskId uint64 `json:"taskId" binding:"required"`
+	TaskId string `json:"taskId" binding:"required"`
 	// MaidId 负责执行任务的女仆节点ID
 	MaidId int64 `json:"maidId" binding:"required"`
 
@@ -74,14 +74,14 @@ type ListTasksReq struct {
 
 // 查询定时任务的返回体
 type ListTasksResp struct {
-	TaskId         	uint64     	`json:"taskId"`     // 任务ID
-	MaidId         	uint64	    `json:"maidId"`     // 女仆节点ID
-	MaidName       	string    	`json:"maidName"`   // 女仆节点名称
-	Mode 			string 		`json:"mode"`		// 备份模式: full-全量, incremental-增量
-	Source   	   	string    	`json:"source"`		// 备份路径
-	Cron 			string 		`json:"cron"`		// CRON表达式
-	Enabled 		bool 		`json:"enabled"`	// 是否启用
-	CreateTime 		time.Time 	`json:"createTime"`	// 记录创建时间
-	OwnerId 		uint64 		`json:"ownerId"`	// 所有者id
-	UpdateTime 		time.Time 	`json:"updateTime"`	// 记录修改时间
+	TaskId     string    `json:"taskId"`     // 任务ID
+	MaidId     string    `json:"maidId"`     // 女仆节点ID
+	MaidName   string    `json:"maidName"`   // 女仆节点名称
+	Mode       string    `json:"mode"`       // 备份模式: full-全量, incremental-增量
+	Source     string    `json:"source"`     // 备份路径
+	Cron       string    `json:"cron"`       // CRON表达式
+	Enabled    bool      `json:"enabled"`    // 是否启用
+	CreateTime time.Time `json:"createTime"` // 记录创建时间
+	OwnerId    string    `json:"ownerId"`    // 所有者id
+	UpdateTime time.Time `json:"updateTime"` // 记录修改时间
 }

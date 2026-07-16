@@ -17,8 +17,12 @@ func NewReqToPO(r *dto.NewBackupTaskReq) *po.BackupTaskPO {
 // ToPO 将 EditBackupTaskReq 转换为 BackupTaskPO
 // 仅映射 PO 中存在的字段：TaskId、Mode、Source
 func EditReqToPO(r *dto.EditBackupTaskReq) *po.BackupTaskPO {
+	taskId, err := dto.StringToUint64(r.TaskId)
+	if err != nil {
+		return nil
+	}
 	return &po.BackupTaskPO{
-		TaskId: r.TaskId,
+		TaskId: taskId,
 		Mode:   string(r.Mode),
 		Source: r.Source,
 	}
@@ -32,11 +36,11 @@ func ToListTasksResp(p *po.BackupTaskPO) *dto.ListTasksResp {
 		return nil
 	}
 	return &dto.ListTasksResp{
-		TaskId:     p.TaskId,
+		TaskId:     dto.Uint64ToString(p.TaskId),
 		Mode:       p.Mode,
 		Source:     p.Source,
 		CreateTime: p.CreateTime,
-		OwnerId:    uint64(p.OwnerId),
+		OwnerId:    dto.Uint64ToString(uint64(p.OwnerId)),
 		UpdateTime: p.UpdateTime,
 	}
 }

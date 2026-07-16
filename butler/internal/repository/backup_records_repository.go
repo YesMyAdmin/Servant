@@ -5,13 +5,15 @@ import (
 	"butler/internal/database"
 )	
 
-// ListBackupFiles 分页查询备份文件记录，支持按文件ID模糊搜索
+// ListBackupFiles 分页查询备份文件记录，支持按文件名模糊搜索
 func ListBackupFiles(fileName string, pageNum, pageSize int) ([]po.BackupRecordPO, int64, error) {
-	db := database.DB.Model(&po.BackupRecordPO{})
-
+	db := database.DB.Table("(?) AS ranked", 
+			database.DB.Model(&po.BackupRecordPO{}).
+			Select("*, ROW_NUMBER() OVER (PARTITION BY file_id ORDER BY create_time DESC) AS rn")).
+		Where("rn = 1") // 只保留每个文件的最新备份记录
 	// 按名称模糊搜索
 	if fileName != "" {
-		db = db.Where("instr(file_name, ?)", fileName)
+		db = db.Where("instr(file_name, ?)", fileName).Order("record_id DESC")
 	}
 
 	// 先查询总数
