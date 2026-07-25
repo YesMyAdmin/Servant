@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"butler/internal/pkg"
+	"time"
+)
 
 // BackupFileResp 备份文件查询响应
 type BackupFileResp struct {
@@ -16,4 +19,10 @@ type BackupFileResp struct {
 	CreateTime     time.Time `json:"createTime"`     // 创建时间
 	OwnerId        string    `json:"ownerId"`        // 所有者ID
 	UpdateTime     time.Time `json:"updateTime"`     // 更新时间
+}
+
+// 列出最新备份文件
+type ListBackupFileReq struct {
+	FileName string `json:"fileName" form:"fileName"` //文件名称
+	pkg.PageableReq
 }

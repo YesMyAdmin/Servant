@@ -6,7 +6,7 @@ import (
 )	
 
 // ListBackupFiles 分页查询备份文件记录，支持按文件名模糊搜索
-func ListBackupFiles(fileName string, pageNum, pageSize int) ([]po.BackupRecordPO, int64, error) {
+func ListBackupFiles(fileName string, pageNum, pageSize int) (*[]po.BackupRecordPO, int, error) {
 	db := database.DB.Table("(?) AS ranked", 
 			database.DB.Model(&po.BackupRecordPO{}).
 			Select("*, ROW_NUMBER() OVER (PARTITION BY file_id ORDER BY create_time DESC) AS rn")).
@@ -29,19 +29,19 @@ func ListBackupFiles(fileName string, pageNum, pageSize int) ([]po.BackupRecordP
 		return nil, 0, err
 	}
 
-	return records, total, nil
+	return &records, total, nil
 }
 
 
 // ListRecordsByFileId 查询某个文件的备份记录
-func ListRecordsByFileId(fileId uint64) ([]po.BackupRecordPO, error) {
+func ListRecordsByFileId(fileId uint64) (*[]po.BackupRecordPO, error) {
 	db := database.DB.Model(&po.BackupRecordPO{})
 	var records []po.BackupRecordPO
 	err := db.Where("file_id = ?", fileId).Find(&records).Error
 	if err != nil {
 		return nil, err
 	}
-	return records, nil
+	return &records, nil
 }
 
 // DeleteBackupRecord 删除备份记录

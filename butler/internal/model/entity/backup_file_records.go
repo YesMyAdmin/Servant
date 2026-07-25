@@ -147,3 +147,21 @@ func LoadBackupFileRecordFromPO(po *po.BackupRecordPO) *BackupFileRecord {
 		UpdateTime:            po.UpdateTime,
 	}
 }
+
+// 将BackupRecordPO数组转换为BackupFileRecord数组
+func LoadBackupFileRecordFromPOArray(poArray *[]po.BackupRecordPO) *[]BackupFileRecord {
+	var entityArray []BackupFileRecord
+	for _, po := range *poArray {
+		entityArray = append(entityArray, *LoadBackupFileRecordFromPO(&po))
+	}
+	return &entityArray
+}
+
+// 将BackupFileRecord数组转换为BackupFileResp返回体数组
+func DumpBackupFileRecordsToResp(entityArray *[]BackupFileRecord) *[]dto.BackupFileResp {
+	var respArray []dto.BackupFileResp
+	for _, entity := range *entityArray {
+		respArray = append(respArray, *entity.DumpToResp())
+	}
+	return &respArray
+}
