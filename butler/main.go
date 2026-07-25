@@ -20,7 +20,12 @@ func main() {
 	r := gin.Default()
 
 	// 注册路由
+	// 备份任务管理
 	r.GET("/butler/backup/tasks/list", middleware.HandlerFunc(controller.ListTasks))
+	r.POST("/butler/backup/tasks/new", middleware.HandlerFunc(controller.NewTask))
+	r.POST("/butler/backup/tasks/{taskId}/switch", middleware.HandlerFunc(controller.SwitchTasks))
+	r.POST("/butler/backup/tasks/{taskId}/delete", middleware.HandlerFunc(controller.DeleteBackupTask))
+	// 备份文件管理
 
 	// 启动服务
 	if err := r.Run(":8080"); err != nil {

@@ -85,3 +85,8 @@ type ListTasksResp struct {
 	OwnerId    string    `json:"ownerId"`    // 所有者id
 	UpdateTime time.Time `json:"updateTime"` // 记录修改时间
 }
+
+//切换任务状态的请求
+type SwitchTaskReq struct {
+	Enabled    bool      `json:"enabled"`    // 是否启用
+}
