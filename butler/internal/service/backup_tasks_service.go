@@ -43,7 +43,7 @@ func ListTasks(req *dto.ListTasksReq) (*pkg.PageableResp[dto.ListTasksResp], err
 	pages := int(math.Ceil(float64(total) / float64(req.PageSize)))
 
 	return &pkg.PageableResp[dto.ListTasksResp]{
-		Total:    int(total),
+		Total:    total,
 		Pages:    pages,
 		Contents: contents,
 	}, nil

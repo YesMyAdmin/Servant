@@ -34,6 +34,8 @@ type BackupFileRecord struct {
 	VersionHash           uint64
 	// DumpId 转储ID
 	DumpId                uint64
+	// DumpIrl 转储文件存储url
+	DumpUrl               string
 	// ExpireTime 过期时间
 	ExpireTime            time.Time
 	// FileActualDeletedTime 文件实际删除时间
@@ -123,6 +125,35 @@ func (b *BackupFileRecord) DumpToResp() *dto.BackupFileResp {
 		OwnerId:        dto.Uint64ToString(b.OwnerId),
 		UpdateTime:     b.UpdateTime,
 	}
+}
+
+// 实体转为备份记录DTO
+func (b BackupFileRecord) DumpToRecordResp() *dto.BackupRecordResp {
+	return &dto.BackupRecordResp{
+		FileId:         dto.Uint64ToString(b.FileId),
+		FileName:       b.FileName,
+		MaidId:         dto.Uint64ToString(b.MaidId),
+		TaskId:         dto.Uint64ToString(b.TaskId),
+		OriginalPath:   b.OriginalPath,
+		FileSize:       dto.Uint64ToString(b.FileSize),
+		FileCreateTime: b.FileCreateTime,
+		FileModifyTime: b.FileModifyTime,
+		VersionHash:    dto.Uint64ToString(b.VersionHash),
+		DumpId:         dto.Uint64ToString(b.DumpId),
+		DumpUrl:        b.DumpUrl,
+		CreateTime:     b.CreateTime,
+		OwnerId:        dto.Uint64ToString(b.OwnerId),
+		UpdateTime:     b.UpdateTime,
+	}
+}
+
+// 将BackupFileRecord数组转换为BackupRecordResp返回体数组
+func DumpBackupFileRecordsToRecordResp(entityArray *[]BackupFileRecord) *[]dto.BackupRecordResp {
+	var respArray []dto.BackupRecordResp
+	for _, entity := range *entityArray {
+		respArray = append(respArray, *entity.DumpToRecordResp())
+	}
+	return &respArray
 }
 
 // LoadBackupFileRecordFromPO 将 BackupRecordPO 转换为 BackupFile 实体

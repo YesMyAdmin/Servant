@@ -37,7 +37,7 @@ type ErrorResp struct {
 
 //分页返回体
 type PageableResp[C any] struct {
-	Total int `json:"total"`
+	Total int64 `json:"total"`
 	Pages int `json:"pages"`
 	Contents []C `json:"contents,omitempty"`
 }
