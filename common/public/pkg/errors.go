@@ -70,3 +70,21 @@ func DatabaseError(tableName string, err error) error {
 		},
 	}
 }
+
+//--------------------业务类型错误--------------------
+
+// 合并文件冲突错误(409)
+func FileMergingConflictError(files *[]uint64) error {
+	returnMsg := "Files you merging have different types and cannot be merged."
+	slog.Error(returnMsg, slog.Any("files", files))
+	return &ServiceError{
+		response: ErrorResp{
+			Error: "butler.backup_files.merge_conflict",
+			RaiseTime: time.Now(),
+			HttpResp: HttpResp{
+				Status: http.StatusConflict,
+				Msg: returnMsg,
+			},
+		},
+	}
+}

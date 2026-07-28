@@ -53,15 +53,22 @@ func MergeBackupFileRecords(files *[]uint64) (uint64, error) {
 	records := entity.LoadBackupFileRecordFromPOArray(recordsPO)
 	//将多个文件并入到最新记录对应的文件中
 	var newestRecord *entity.BackupFileRecord 
+	var fileType string
 	for _, record := range *records {
 		if newestRecord == nil || newestRecord.CreateTime.Before(record.CreateTime) {
 			newestRecord = &record
 		} 
+		//所有合并文件的类型必须一致
+		if fileType == "" {
+			fileType = record.FileType
+		} else if fileType != record.FileType {
+			return 0, pkg.FileMergingConflictError(files)
+		}
 	}
 	//更新旧有记录的文件id
 	dbErr := repository.UpdateBackupFileId(files, newestRecord.BackupRecordId)
 	if (dbErr != nil) {
-		return 0, nil
+		return 0, dbErr
 	}
 	return newestRecord.BackupRecordId, nil
 }

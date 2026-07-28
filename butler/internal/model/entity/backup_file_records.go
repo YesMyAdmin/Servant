@@ -16,16 +16,18 @@ type BackupFileRecord struct {
 	BackupRecordId        uint64
 	// FileId 文件ID
 	FileId                uint64
-	// FileName 文件名
-	FileName              string
 	// MaidId 女仆节点ID
 	MaidId                uint64
 	// TaskId 任务ID
 	TaskId                uint64
 	// OriginalPath 原始路径
 	OriginalPath          string
+	// FileName 文件名
+	FileName              string
 	// FileSize 文件大小
 	FileSize              uint64
+	// FileType 文件类型 file:文件 directory:目录 link:链接 other:其他(块设备、管道等)
+	FileType              string
 	// FileCreateTime 文件创建时间
 	FileCreateTime        time.Time
 	// FileModifyTime 文件修改时间
