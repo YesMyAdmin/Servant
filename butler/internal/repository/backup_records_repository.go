@@ -1,9 +1,11 @@
 package repository
 
 import (
-	"butler/internal/model/po"
 	"butler/internal/database"
-)	
+	"butler/internal/model/po"
+	"common/public/pkg"
+	"time"
+)
 
 // ListBackupFiles 分页查询备份文件记录，支持按文件名模糊搜索
 func ListBackupFiles(fileName string, pageNum, pageSize int) (*[]po.BackupRecordPO, int64, error) {
@@ -19,14 +21,14 @@ func ListBackupFiles(fileName string, pageNum, pageSize int) (*[]po.BackupRecord
 	// 先查询总数
 	var total int64
 	if err := db.Count(&total).Error; err != nil {
-		return nil, 0, err
+		return nil, 0, pkg.DatabaseError(po.BackupRecordPO{}.TableName(), err)
 	}
 
 	// 分页查询
 	var records []po.BackupRecordPO
 	offset := (pageNum - 1) * pageSize
 	if err := db.Offset(offset).Limit(pageSize).Find(&records).Error; err != nil {
-		return nil, 0, err
+		return nil, 0, pkg.DatabaseError(po.BackupRecordPO{}.TableName(), err)
 	}
 
 	return &records, total, nil
@@ -41,16 +43,58 @@ func ListRecordsByFileId(fileId uint64, pageNum, pageSize int) (*[]po.BackupReco
 	var total int64
 	countErr := db.Count(&total).Error
 	if countErr != nil {
-		return nil, 0, countErr
+		return nil, 0, pkg.DatabaseError(po.BackupRecordPO{}.TableName(), countErr)
 	}
 
 	offset := (pageNum - 1) * pageSize
 	err := db.Offset(offset).Limit(pageSize).Find(&records).Error
+	//返回数据库错误
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, pkg.DatabaseError(po.BackupRecordPO{}.TableName(), err)
 	}
 
 	return &records, total, nil
+}
+
+// 
+func SelectRecordsByFiles(files *[]uint64) (*[]po.BackupRecordPO ,error) {
+	if (len(*files) <= 0) {
+		return nil, pkg.BadArgumentsError("files is empty");
+	}
+	if (len(*files) >= 200) {
+		return nil, pkg.BadArgumentsError("files is too large");
+	}
+	var records []po.BackupRecordPO
+	dbError := database.DB.Model(&po.BackupRecordPO{}).Where("file_id in (?)", files).Find(&records).Error
+	//返回数据库错误
+	if (dbError != nil) {
+		return nil, pkg.DatabaseError(po.BackupRecordPO{}.TableName(), dbError)
+	}
+	return &records, nil
+
+}
+
+// UpdateBackupFileId 将不同的文件id合并成一个
+func UpdateBackupFileId(files *[]uint64, newFileId uint64) error {
+	if (len(*files) <= 0) {
+		return pkg.BadArgumentsError("files is empty");
+	}
+	if (len(*files) >= 200) {
+		return pkg.BadArgumentsError("files is too large");
+	}
+	updateFileId := map[string]any{
+    	"file_id": newFileId,
+		"update_time": time.Now(),
+	}
+	dbError := database.DB.Model(&po.BackupRecordPO{}).
+		Where("file_id in (?)", files).
+		Select("file_id").
+		Updates(updateFileId).Error
+	//返回数据库错误
+	if (dbError != nil) {
+		return pkg.DatabaseError(po.BackupRecordPO{}.TableName(), dbError)
+	}
+	return nil
 }
 
 // DeleteBackupRecord 删除备份记录
@@ -58,7 +102,7 @@ func DeleteBackupRecord(backupRecordId uint64) error {
 	db := database.DB.Model(&po.BackupRecordPO{})
 	err := db.Where("backup_record_id = ?", backupRecordId).Delete(&po.BackupRecordPO{}).Error
 	if err != nil {
-		return err
+		return pkg.DatabaseError(po.BackupRecordPO{}.TableName(), err)
 	}
 	return nil
 }
