@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"butler/internal/pkg"
+	"common/public/pkg"
 	"time"
 )
 

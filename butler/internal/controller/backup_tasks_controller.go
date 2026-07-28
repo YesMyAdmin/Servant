@@ -2,7 +2,7 @@ package controller
 
 import (
 	"butler/internal/model/dto"
-	"butler/internal/pkg"
+	"common/public/pkg"
 	"butler/internal/service"
 	"net/http"
 	"strconv"

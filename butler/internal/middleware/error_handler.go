@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"butler/internal/pkg"
+	"common/public/pkg"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

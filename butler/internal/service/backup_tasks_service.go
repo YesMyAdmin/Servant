@@ -2,7 +2,7 @@ package service
 
 import (
 	"butler/internal/model/dto"
-	"butler/internal/pkg"
+	"common/public/pkg"
 	"butler/internal/repository"
 	"butler/internal/model/entity"
 	"math"
