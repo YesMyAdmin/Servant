@@ -27,6 +27,12 @@ func main() {
 	r.POST("/butler/backup/tasks/{taskId}/delete", middleware.HandlerFunc(controller.DeleteBackupTask))
 	// 备份文件管理
 
+	// 女仆节点管理
+	r.POST("/butler/maids/register", middleware.HandlerFunc(controller.RegisterMaid))
+	r.POST("/butler/maids/{maidId}/dismiss", middleware.HandlerFunc(controller.DismissMaid))
+	r.POST("/butler/maids/{maidId}/update", middleware.HandlerFunc(controller.UpdateMaid))
+	r.GET("/butler/maids/list", middleware.HandlerFunc(controller.ListMaids))
+
 	// 启动服务
 	if err := r.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

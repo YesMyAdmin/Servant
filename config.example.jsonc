@@ -1,0 +1,113 @@
+// example configuration file for butler and maids.
+// If you want to make the configuration file effective, please use the command "butler(or maid) --config-apply <your config file path>", input the master password,
+// and the node instance will encrypt the configuration file.
+// That way, when you restart the node instance(master password required when restart), the configuration file will be effective.
+{
+    // general options for the butler and maids
+    "general": {
+        //name of the node instance(butler or maid)
+        //eg. "Sebasuchan Mikaerisu" or "Meirin".
+        //Different node instances must have different names.
+        "name": "Sebasuchan Mikaerisu",
+        "server": {
+            //server port, default is 8080
+            "port": 8080,
+            //server host, default is "localhost"
+            "host": "yes.my.admin",
+            //server log level, can be "debug", "info", "warn", "error", default is "info"
+            "logLevel": "info",
+            "cors": {
+                //enable CORS, default is true, if your server doesn't have a domain name, you can set it to false, but it is not recommended
+                "enable": true,
+                //allowed origins, "*" is prohibited, can be a list of origins, if you want to allow all origins, set "enable" to false
+                "allowOrigins": [
+                    "https://yes.my.admin"
+                ],
+                //allowed methods, "*" is prohibited, can be a list of methods, default is ["GET", "POST", "OPTIONS"]
+                "allowMethods": [
+                    "GET",
+                    "POST",
+                    "OPTIONS"
+                ],
+                //allowed headers, "*" is prohibited
+                "allowHeaders": [
+                    "Content-Type",
+                    "Authorization",
+                    "X-Requested-With",
+                    "Accept",
+                    "Accept-Encoding",
+                    "Cache-Control",
+                    "Accept-Language",
+                    "DNT",
+                    "Referer",
+                    "User-Agent"
+                ],
+                //exposed headers, "*" is prohibited
+                "exposeHeaders": [
+                    "X-Total-Count",
+                    "Content-Type",
+                    "Content-Range",
+                    "Accept-Ranges",
+                    ""
+                ],
+                //allow credentials
+                "allowCredentials": true,
+                //max age in seconds, default is 600
+                "maxAge": 600
+            },
+            "sensitiveDataTransmit": {
+                "enable": true,
+                //encryption private key, 8-words or more randomly generated, separated by hyphens, e.g. "late-careful-make-hard-year-face-other-still"
+                "privateKey": "late-careful-make-hard-year-face-other-still",
+                //data encryption algorithm(asymmetric encryption algorithm,rsa is prohibited)
+                "algorithm": "ecdh"
+            },
+            "jwtAuthorization": {
+                // jwt access secret, 8-words or more randomly generated, separated by hyphens.
+                // Butlers will use this secret to sign the JWT token for user login.
+                // From maid's perspective, if a butler needs to access the maid's API, butler must use the secret matched with the maid's access secret to sign the JWT token,
+                // otherwise the maid will reject the request 
+                "accessSecret": "clearly-now-president-soon-begin-lead-bring-simply"
+            }
+                    
+        },
+        "databases": [
+            {
+                //name of the connection configuration, can be any string 
+                "name": "Yes,Miss Maria",
+                //dbms type, currently supports "mysql" (including MariaDB), PostgreSQL is not support yet.
+                "dbms": "mysql",
+                //host of the database server, can be an IP address or a domain name
+                "host": "localhost",
+                //port of the database server, integer format, default is 3306 for MySQL and 5432 for PostgreSQL
+                "port": 3306,
+                //connection properties, e.g. "charset=utf8mb4&parseTime=True&loc=Local"
+                "properties": "charset=utf8mb4&parseTime=True&loc=Local",
+                //database name
+                "database": "yes_miss_maria",
+                //username,"root" and "postgres" is prohibited
+                "user": "sebasuchan-mikaerisu",
+                //password,8-words or more randomly generated, separated by hyphens, e.g. "idea-president-generous-light-bright-easily-grateful-have"
+                "password": "idea-president-generous-light-bright-easily-grateful-have",
+                // option of encrypt the sensitive data such as phone number, social security number, identity card number, etc.
+                "sensitiveDataEncryption": {
+                    "enable": true,
+                    //data encryption key, 8-words or more randomly generated, separated by hyphens, e.g. "late-careful-make-hard-year-face-other-still"
+                    "key": "late-careful-make-hard-year-face-other-still",
+                    //data encryption algorithm(symmetric encryption algorithm)
+                    "algorithm": "aes-256-gcm"
+                }
+            }
+        ],
+        "redis": {
+            //redis host, can be an IP address or a domain name
+            "host": "localhost",
+            //redis port, integer format, default is 6379 
+            "port": 6379,
+            //redis password, empty string (redis default setting) is prohibited, please set a password for your redis server
+            "password": "often-heart-set-still-young-large-perfect-month",
+            //redis database index, integer format, default is 0
+            "db": 0
+        }
+    }
+}
