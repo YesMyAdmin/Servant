@@ -9,6 +9,7 @@ import (
 type BackupFileResp struct {
 	FileId         string    `json:"fileId"`         // 文件ID
 	FileName       string    `json:"fileName"`       // 文件名
+	FileType       string    `json:"fileType"`       // 文件类型 file:文件 directory:目录 link:链接 other:其他(块设备、管道等)
 	MaidId         string    `json:"maidId"`         // 女仆节点ID
 	TaskId         string    `json:"taskId"`         // 任务ID
 	OriginalPath   string    `json:"originalPath"`   // 原始路径
@@ -25,6 +26,7 @@ type BackupFileResp struct {
 type BackupRecordResp struct {
 	FileId         string    `json:"fileId"`         // 文件ID
 	FileName       string    `json:"fileName"`       // 文件名
+	FileType       string    `json:"fileType"`       // 文件类型 file:文件 directory:目录 link:链接 other:其他(块设备、管道等)
 	MaidId         string    `json:"maidId"`         // 女仆节点ID
 	TaskId         string    `json:"taskId"`         // 任务ID
 	OriginalPath   string    `json:"originalPath"`   // 原始路径

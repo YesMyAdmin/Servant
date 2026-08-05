@@ -11,6 +11,7 @@ type BackupRecordPO struct {
 	TaskId               uint64     `gorm:"column:task_id;not null;comment:任务id" json:"taskId"`
 	OriginalPath         string     `gorm:"column:original_path;type:varchar(1024);not null;comment:源文件路径" json:"originalPath"`
 	FileSize             uint64     `gorm:"column:file_size;not null;comment:文件大小(bytes)" json:"fileSize"`
+	FileType       		 string     `gorm:"column:file_type;not null;comment:文件类型" json:"fileType"`       // 文件类型 file:文件 directory:目录 link:链接 other:其他(块设备、管道等)
 	FileCreateTime       time.Time  `gorm:"column:file_create_time;not null;comment:文件创建时间" json:"fileCreateTime"`
 	FileModifyTime       time.Time  `gorm:"column:file_modify_time;not null;comment:文件修改时间" json:"fileModifyTime"`
 	VersionHash          uint64     `gorm:"column:version_hash;not null;comment:文件版本hash,由xxhash64生成" json:"versionHash"`

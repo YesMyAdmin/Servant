@@ -45,6 +45,30 @@ func BackupFileRecords(req *dto.ListBackupFileRecordsReq) (*pkg.PageableResp[dto
 }
 
 // 手动合并文件的备份记录，这通常用于文件的路径改变后，管理员需要保持备份记录的连贯性
-func MergeBackupFileRecords(files []string) {
-
+func MergeBackupFileRecords(files *[]uint64) (uint64, error) {
+	recordsPO, err := repository.SelectRecordsByFiles(files);
+	if (err != nil) {
+		return 0, err
+	}
+	records := entity.LoadBackupFileRecordFromPOArray(recordsPO)
+	//将多个文件并入到最新记录对应的文件中
+	var newestRecord *entity.BackupFileRecord 
+	var fileType string
+	for _, record := range *records {
+		if newestRecord == nil || newestRecord.CreateTime.Before(record.CreateTime) {
+			newestRecord = &record
+		} 
+		//所有合并文件的类型必须一致
+		if fileType == "" {
+			fileType = record.FileType
+		} else if fileType != record.FileType {
+			return 0, pkg.FileMergingConflictError(files)
+		}
+	}
+	//更新旧有记录的文件id
+	dbErr := repository.UpdateBackupFileId(files, newestRecord.BackupRecordId)
+	if (dbErr != nil) {
+		return 0, dbErr
+	}
+	return newestRecord.BackupRecordId, nil
 }
