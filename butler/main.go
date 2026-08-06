@@ -4,13 +4,22 @@ import (
 	"butler/internal/controller"
 	"butler/internal/database"
 	"butler/internal/middleware"
+	"common/public/config"
 	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 //管家节点入口函数
-func main() {
+func main(masterPassword string, encryptedConfigPath string) {
+	// 解密配置文件
+	if (encryptedConfigPath == "") {
+		defaultEncryptedConfigPath := "config/config.bin"
+		config.DecryptConfig(masterPassword, defaultEncryptedConfigPath)
+	} else {
+		config.DecryptConfig(masterPassword, encryptedConfigPath)
+	}
+	
 	// 初始化数据库
 	if err := database.Init(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
