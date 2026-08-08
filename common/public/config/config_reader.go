@@ -1,14 +1,16 @@
-package config;
+package config
 
 import (
-	"github.com/spf13/viper"
+	"bytes"
+	"common/public/pkg"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/hmac"
-    "crypto/sha256"
+	"crypto/sha256"
 	"fmt"
 	"os"
-	"bytes"
+
+	"github.com/spf13/viper"
 )
 
 var cfg *viper.Viper
@@ -116,9 +118,9 @@ func doEncrtpt(masterPassword string, encryptedConfigPath string) ([]byte, error
 
 // Get 获取配置项的值
 // key: 配置项的键
-func Get(key string) any {
+func Get(key string) (any, error) {
 	if cfg == nil {
-		panic("config not initialized, please decrypt config file first")
+		return nil, pkg.ConfigUnavailableError("Configuration is not initialized. Please call DecryptConfig first.")
 	}
-	return cfg.Get(key)
+	return cfg.Get(key), nil
 }

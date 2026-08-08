@@ -3,7 +3,8 @@ package entity
 import (
 	"bufio"
 	"butler/internal/model/dto"
-	"butler/internal/model/po"
+	backupdto "butler/internal/model/dto/backup"
+	"butler/internal/model/po/backup"
 	"io"
 	"os"
 	"time"
@@ -112,8 +113,8 @@ func (b *BackupFileRecord) DumpToPO() *po.BackupRecordPO {
 	}
 }
 
-func (b *BackupFileRecord) DumpToResp() *dto.BackupFileResp {
-	return &dto.BackupFileResp{
+func (b *BackupFileRecord) DumpToResp() *backupdto.BackupFileResp {
+	return &backupdto.BackupFileResp{
 		FileId:         dto.Uint64ToString(b.FileId),
 		FileName:       b.FileName,
 		MaidId:         dto.Uint64ToString(b.MaidId),
@@ -130,8 +131,8 @@ func (b *BackupFileRecord) DumpToResp() *dto.BackupFileResp {
 }
 
 // 实体转为备份记录DTO
-func (b BackupFileRecord) DumpToRecordResp() *dto.BackupRecordResp {
-	return &dto.BackupRecordResp{
+func (b BackupFileRecord) DumpToRecordResp() *backupdto.BackupRecordResp {
+	return &backupdto.BackupRecordResp{
 		FileId:         dto.Uint64ToString(b.FileId),
 		FileName:       b.FileName,
 		MaidId:         dto.Uint64ToString(b.MaidId),
@@ -150,8 +151,8 @@ func (b BackupFileRecord) DumpToRecordResp() *dto.BackupRecordResp {
 }
 
 // 将BackupFileRecord数组转换为BackupRecordResp返回体数组
-func DumpBackupFileRecordsToRecordResp(entityArray *[]BackupFileRecord) *[]dto.BackupRecordResp {
-	var respArray []dto.BackupRecordResp
+func DumpBackupFileRecordsToRecordResp(entityArray *[]BackupFileRecord) *[]backupdto.BackupRecordResp {
+	var respArray []backupdto.BackupRecordResp
 	for _, entity := range *entityArray {
 		respArray = append(respArray, *entity.DumpToRecordResp())
 	}
@@ -159,40 +160,40 @@ func DumpBackupFileRecordsToRecordResp(entityArray *[]BackupFileRecord) *[]dto.B
 }
 
 // LoadBackupFileRecordFromPO 将 BackupRecordPO 转换为 BackupFile 实体
-func LoadBackupFileRecordFromPO(po *po.BackupRecordPO) *BackupFileRecord {
+func LoadBackupFileRecordFromPO(por *po.BackupRecordPO) *BackupFileRecord {
 	return &BackupFileRecord{
-		BackupRecordId:        po.BackupRecordId,
-		FileId:                po.FileId,
-		FileName:              po.FileName,
-		MaidId:                po.MaidId,
-		TaskId:                po.TaskId,
-		OriginalPath:          po.OriginalPath,
-		FileSize:              po.FileSize,
-		FileCreateTime:        po.FileCreateTime,
-		FileModifyTime:        po.FileModifyTime,
-		VersionHash:           po.VersionHash,
-		DumpId:                po.DumpId,
-		ExpireTime:            po.ExpireTime,
-		FileActualDeletedTime: po.FileActualDeletedTime,
-		DeletedTime:           po.DeletedTime,
-		CreateTime:            po.CreateTime,
-		OwnerId:               po.OwnerId,
-		UpdateTime:            po.UpdateTime,
+		BackupRecordId:        por.BackupRecordId,
+		FileId:                por.FileId,
+		FileName:              por.FileName,
+		MaidId:                por.MaidId,
+		TaskId:                por.TaskId,
+		OriginalPath:          por.OriginalPath,
+		FileSize:              por.FileSize,
+		FileCreateTime:        por.FileCreateTime,
+		FileModifyTime:        por.FileModifyTime,
+		VersionHash:           por.VersionHash,
+		DumpId:                por.DumpId,
+		ExpireTime:            por.ExpireTime,
+		FileActualDeletedTime: por.FileActualDeletedTime,
+		DeletedTime:           por.DeletedTime,
+		CreateTime:            por.CreateTime,
+		OwnerId:               por.OwnerId,
+		UpdateTime:            por.UpdateTime,
 	}
 }
 
 // 将BackupRecordPO数组转换为BackupFileRecord数组
 func LoadBackupFileRecordFromPOArray(poArray *[]po.BackupRecordPO) *[]BackupFileRecord {
 	var entityArray []BackupFileRecord
-	for _, po := range *poArray {
-		entityArray = append(entityArray, *LoadBackupFileRecordFromPO(&po))
+	for _, p := range *poArray {
+		entityArray = append(entityArray, *LoadBackupFileRecordFromPO(&p))
 	}
 	return &entityArray
 }
 
 // 将BackupFileRecord数组转换为BackupFileResp返回体数组
-func DumpBackupFileRecordsToResp(entityArray *[]BackupFileRecord) *[]dto.BackupFileResp {
-	var respArray []dto.BackupFileResp
+func DumpBackupFileRecordsToResp(entityArray *[]BackupFileRecord) *[]backupdto.BackupFileResp {
+	var respArray []backupdto.BackupFileResp
 	for _, entity := range *entityArray {
 		respArray = append(respArray, *entity.DumpToResp())
 	}

@@ -1,8 +1,9 @@
-package controller
+package maids
 
 import (
 	"butler/internal/model/dto"
-	"butler/internal/service"
+	maiddto "butler/internal/model/dto/maid"
+	"butler/internal/service/maids"
 	"common/public/pkg"
 	"net/http"
 	"strconv"
@@ -13,19 +14,19 @@ import (
 // RegisterMaid 注册女仆节点
 // POST /butler/maids/register
 func RegisterMaid(c *gin.Context) error {
-	var req dto.RegisterMaidReq
+	var req maiddto.RegisterMaidReq
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
 		return pkg.BadArgumentsError(err.Error())
 	}
 
-	maidId, err := service.RegisterMaid(&req)
+	maidId, err := maids.RegisterMaid(&req)
 	if err != nil {
 		return err
 	}
 
-	c.JSON(http.StatusOK, pkg.DataResp[dto.RegisterMaidResp]{
-		Data: &dto.RegisterMaidResp{
+	c.JSON(http.StatusOK, pkg.DataResp[maiddto.RegisterMaidResp]{
+		Data: &maiddto.RegisterMaidResp{
 			MaidId: dto.Uint64ToString(maidId),
 		},
 		HttpResp: pkg.SuccessMessageResp(""),
@@ -42,7 +43,7 @@ func DismissMaid(c *gin.Context) error {
 		return pkg.BadArgumentsError(parseErr.Error())
 	}
 
-	err := service.DismissMaid(maidId)
+	err := maids.DismissMaid(maidId)
 	if err != nil {
 		return err
 	}
@@ -60,13 +61,13 @@ func UpdateMaid(c *gin.Context) error {
 		return pkg.BadArgumentsError(parseErr.Error())
 	}
 
-	var req dto.UpdateMaidReq
+	var req maiddto.UpdateMaidReq
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		return pkg.BadArgumentsError(err.Error())
 	}
 
-	err = service.UpdateMaid(maidId, &req)
+	err = maids.UpdateMaid(maidId, &req)
 	if err != nil {
 		return err
 	}
@@ -78,13 +79,13 @@ func UpdateMaid(c *gin.Context) error {
 // ListMaids 查看女仆节点列表
 // GET /butler/maids/list
 func ListMaids(c *gin.Context) error {
-	var req dto.ListMaidsReq
+	var req maiddto.ListMaidsReq
 	err := c.ShouldBindQuery(&req)
 	if err != nil {
 		return pkg.BadArgumentsError(err.Error())
 	}
 
-	resp, err := service.ListMaids(&req)
+	resp, err := maids.ListMaids(&req)
 	if err != nil {
 		return err
 	}

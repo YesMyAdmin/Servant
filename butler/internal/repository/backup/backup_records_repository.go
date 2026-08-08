@@ -1,8 +1,8 @@
-package repository
+package backup
 
 import (
 	"butler/internal/database"
-	"butler/internal/model/po"
+	"butler/internal/model/po/backup"
 	"common/public/pkg"
 	"time"
 )

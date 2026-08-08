@@ -71,6 +71,21 @@ func DatabaseError(tableName string, err error) error {
 	}
 }
 
+// 配置读取失败错误(503)
+func ConfigUnavailableError(msg string) error {
+	slog.Error(msg)
+	return &ServiceError{
+		response: ErrorResp{
+			Error: "common.config_unavailable",
+			RaiseTime: time.Now(),
+			HttpResp: HttpResp{
+				Status: http.StatusServiceUnavailable,
+				Msg: msg,
+			},
+		},
+	}
+}
+
 //--------------------业务类型错误--------------------
 
 // 合并文件冲突错误(409)

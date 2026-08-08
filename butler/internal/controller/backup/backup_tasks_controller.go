@@ -1,9 +1,9 @@
-package controller
+package backup
 
 import (
-	"butler/internal/model/dto"
+	"butler/internal/model/dto/backup"
 	"common/public/pkg"
-	"butler/internal/service"
+	backupsvc "butler/internal/service/backup"
 	"net/http"
 	"strconv"
 
@@ -17,7 +17,7 @@ func NewTask(c *gin.Context) error {
 	if (err!=nil) {
 		return pkg.BadArgumentsError(err.Error())
 	}
-	err = service.NewBackupTask(&req)
+	err = backupsvc.NewBackupTask(&req)
 	if (nil != err) {
 		return err
 	}
@@ -32,7 +32,7 @@ func ListTasks(c *gin.Context) error {
 	if (err!=nil) {
 		return pkg.BadArgumentsError(err.Error())
 	}
-	resp, err := service.ListTasks(&req);
+	resp, err := backupsvc.ListTasks(&req);
 	if (err!= nil) {
 		return err
 	}
@@ -55,7 +55,7 @@ func SwitchTasks(c *gin.Context) error {
 		return pkg.BadArgumentsError(parseErr.Error())
 	}
 
-	service.BackupTaskSwitch(uint64(taskId), req.Enabled)
+	backupsvc.BackupTaskSwitch(uint64(taskId), req.Enabled)
 	return nil
 }
 
@@ -66,6 +66,6 @@ func DeleteBackupTask(c *gin.Context) error {
 	if (parseErr != nil) {
 		return pkg.BadArgumentsError(parseErr.Error())
 	}
-	service.DeleteBackupTask(taskId)
+	backupsvc.DeleteBackupTask(taskId)
 	return nil
 }

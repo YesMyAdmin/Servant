@@ -1,13 +1,14 @@
 package entity
 
 import (
-	"butler/internal/model/po"
 	"butler/internal/model/dto"
+	backupdto "butler/internal/model/dto/backup"
+	"butler/internal/model/po/backup"
 )
 
 // ToPO 将 NewBackupTaskReq 转换为 BackupTaskPO
 // 仅映射 PO 中存在的字段：Mode、Source
-func NewReqToPO(r *dto.NewBackupTaskReq) *po.BackupTaskPO {
+func NewReqToPO(r *backupdto.NewBackupTaskReq) *po.BackupTaskPO {
 	return &po.BackupTaskPO{
 		Mode:   string(r.Mode),
 		Source: r.Source,
@@ -16,7 +17,7 @@ func NewReqToPO(r *dto.NewBackupTaskReq) *po.BackupTaskPO {
 
 // ToPO 将 EditBackupTaskReq 转换为 BackupTaskPO
 // 仅映射 PO 中存在的字段：TaskId、Mode、Source
-func EditReqToPO(r *dto.EditBackupTaskReq) *po.BackupTaskPO {
+func EditReqToPO(r *backupdto.EditBackupTaskReq) *po.BackupTaskPO {
 	taskId, err := dto.StringToUint64(r.TaskId)
 	if err != nil {
 		return nil
@@ -31,11 +32,11 @@ func EditReqToPO(r *dto.EditBackupTaskReq) *po.BackupTaskPO {
 // ToListTasksResp 将 BackupTaskPO 转换为 ListTasksResp
 // 映射 PO 中所有公共字段；MaidId、MaidName、Cron、Enabled 等
 // 不属于 PO 的字段由调用方按需填充
-func ToListTasksResp(p *po.BackupTaskPO) *dto.ListTasksResp {
+func ToListTasksResp(p *po.BackupTaskPO) *backupdto.ListTasksResp {
 	if p == nil {
 		return nil
 	}
-	return &dto.ListTasksResp{
+	return &backupdto.ListTasksResp{
 		TaskId:     dto.Uint64ToString(p.TaskId),
 		Mode:       p.Mode,
 		Source:     p.Source,
@@ -46,11 +47,11 @@ func ToListTasksResp(p *po.BackupTaskPO) *dto.ListTasksResp {
 }
 
 // ToListTasksRespSlice 批量将 BackupTaskPO 切片转换为 ListTasksResp 切片
-func ToListTasksRespSlice(pos []po.BackupTaskPO) []dto.ListTasksResp {
+func ToListTasksRespSlice(pos []po.BackupTaskPO) []backupdto.ListTasksResp {
 	if pos == nil {
 		return nil
 	}
-	result := make([]dto.ListTasksResp, 0, len(pos))
+	result := make([]backupdto.ListTasksResp, 0, len(pos))
 	for i := range pos {
 		if resp := ToListTasksResp(&pos[i]); resp != nil {
 			result = append(result, *resp)

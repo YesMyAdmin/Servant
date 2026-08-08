@@ -1,7 +1,8 @@
 package butler
 
 import (
-	"butler/internal/controller"
+	"butler/internal/controller/backup"
+	"butler/internal/controller/maids"
 	"butler/internal/database"
 	"butler/internal/middleware"
 	"common/public/config"
@@ -21,8 +22,9 @@ func main(masterPassword string, encryptedConfigPath string) {
 	}
 	
 	// 初始化数据库
-	if err := database.Init(); err != nil {
+	if err := database.Connect(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
+		return
 	}
 
 	// 创建路由
@@ -30,17 +32,18 @@ func main(masterPassword string, encryptedConfigPath string) {
 
 	// 注册路由
 	// 备份任务管理
-	r.GET("/butler/backup/tasks/list", middleware.HandlerFunc(controller.ListTasks))
-	r.POST("/butler/backup/tasks/new", middleware.HandlerFunc(controller.NewTask))
-	r.POST("/butler/backup/tasks/{taskId}/switch", middleware.HandlerFunc(controller.SwitchTasks))
-	r.POST("/butler/backup/tasks/{taskId}/delete", middleware.HandlerFunc(controller.DeleteBackupTask))
+	r.GET("/butler/backup/tasks/list", middleware.HandlerFunc(backup.ListTasks))
+	r.POST("/butler/backup/tasks/new", middleware.HandlerFunc(backup.NewTask))
+	r.POST("/butler/backup/tasks/{taskId}/switch", middleware.HandlerFunc(backup.SwitchTasks))
+	r.POST("/butler/backup/tasks/{taskId}/delete", middleware.HandlerFunc(backup.DeleteBackupTask))
 	// 备份文件管理
+	
 
 	// 女仆节点管理
-	r.POST("/butler/maids/register", middleware.HandlerFunc(controller.RegisterMaid))
-	r.POST("/butler/maids/{maidId}/dismiss", middleware.HandlerFunc(controller.DismissMaid))
-	r.POST("/butler/maids/{maidId}/update", middleware.HandlerFunc(controller.UpdateMaid))
-	r.GET("/butler/maids/list", middleware.HandlerFunc(controller.ListMaids))
+	r.POST("/butler/maids/register", middleware.HandlerFunc(maids.RegisterMaid))
+	r.POST("/butler/maids/{maidId}/dismiss", middleware.HandlerFunc(maids.DismissMaid))
+	r.POST("/butler/maids/{maidId}/update", middleware.HandlerFunc(maids.UpdateMaid))
+	r.GET("/butler/maids/list", middleware.HandlerFunc(maids.ListMaids))
 
 	// 启动服务
 	if err := r.Run(":8080"); err != nil {

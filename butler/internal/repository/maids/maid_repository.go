@@ -1,8 +1,8 @@
-package repository
+package maids
 
 import (
 	"butler/internal/database"
-	"butler/internal/model/po"
+	"butler/internal/model/po/maids"
 	"time"
 )
 
