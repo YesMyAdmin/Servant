@@ -29,3 +29,17 @@ func SelectByContentType(authorizedContentType grantsConst.AuthorizedContentType
 	return &grants, nil
 }
 
+// SelectByTargetId 根据授权对象类型和被授权对象id查找权限记录
+// authorizedTargetType: 授权对象类型，如user/role/group
+// authorizedTargetId: 授权对象id
+func SelectByTargetId(authorizedTargetType grantsConst.AuthorizedTargetType, authorizedTargetId string) (*[]grantsPo.GrantPO, error) {
+	db := database.DB.Model(&grantsPo.GrantPO{}).
+		Where("authorized_target_type = ?", authorizedTargetType).
+		Where("authorized_target_id = ?", authorizedTargetId)
+	var grants []grantsPo.GrantPO
+	err := db.Find(&grants).Error
+	if err != nil {
+		return nil, err
+	}
+	return &grants, nil
+}
