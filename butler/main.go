@@ -3,7 +3,7 @@ package butler
 import (
 	"butler/internal/controller/backup"
 	"butler/internal/controller/maids"
-	"butler/internal/database"
+	"common/public/database"
 	"butler/internal/middleware"
 	"common/public/config"
 	"log"

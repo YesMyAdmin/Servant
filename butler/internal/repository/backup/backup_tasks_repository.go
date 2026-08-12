@@ -1,7 +1,7 @@
 package backup
 
 import (
-	"butler/internal/database"
+	"common/public/database"
 	"butler/internal/model/po/backup"
 	"time"
 )

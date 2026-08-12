@@ -1,7 +1,7 @@
 package maids
 
 import (
-	"butler/internal/database"
+	"common/public/database"
 	"butler/internal/model/po/maids"
 	"time"
 )

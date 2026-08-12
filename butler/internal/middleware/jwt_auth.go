@@ -17,6 +17,10 @@ type UserClaims struct {
     jwt.RegisteredClaims
 }
 
+func Init() {
+
+}
+
 // JWTAuthMiddleware 返回一个Gin中间件，用于验证JWT
 func JWTAuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
