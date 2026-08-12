@@ -52,3 +52,18 @@ type ListBackupFileRecordsReq struct {
 	FileId string `json:"fileId" form:"fileId" binding:"required"` //文件id(string格式)
 	pkg.PageableReq
 }
+
+// 手动合并文件备份记录请求
+type MergeBackupFilesReq struct {
+	Files []string `json:"files" binding:"required"` // 需要合并的文件ID列表
+}
+
+// 合并文件备份记录响应
+type MergeBackupFilesResp struct {
+	MergedFileId string `json:"mergedFileId"` // 合并后的文件ID（最新备份记录的文件ID）
+}
+
+// 删除备份记录请求
+type DeleteBackupRecordReq struct {
+	DeleteFile bool `json:"deleteFile"` // 是否同时删除存储的文件
+}
