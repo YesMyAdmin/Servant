@@ -1,22 +1,16 @@
 package middleware
 
 import (
-    "net/http"
-    "strings"
-    "github.com/gin-gonic/gin"
-    "github.com/golang-jwt/jwt/v5"
+	userDto "common/public/model/dto/user"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // 用于签名的密钥（生产环境请从环境变量读取）
 var jwtSecret = []byte("your-secret-key")
-
-// 自定义Claims结构体，可根据业务需求添加字段
-type UserClaims struct {
-    UserID   string `json:"user_id"`
-    Username string `json:"username"`
-    jwt.RegisteredClaims
-}
-
 func Init() {
 
 }
@@ -42,8 +36,8 @@ func JWTAuthMiddleware() gin.HandlerFunc {
         tokenString := parts[1]
 
         // 3. 解析并验证Token
-        claims := &UserClaims{}
-        token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+        login := &userDto.LoginSession{}
+        token, err := jwt.ParseWithClaims(tokenString, login, func(token *jwt.Token) (interface{}, error) {
             // 确保使用的签名算法是预期的HS256
             if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
                 return nil, jwt.ErrSignatureInvalid
@@ -57,12 +51,8 @@ func JWTAuthMiddleware() gin.HandlerFunc {
             c.Abort()
             return
         }
-
-        // 5. 将用户信息存入Gin Context，供后续处理器使用
-        c.Set("user_id", claims.UserID)
-        c.Set("username", claims.Username)
         // 也可以直接存入整个claims对象
-        c.Set("claims", claims)
+        c.Set("claims", login)
 
         c.Next() // 继续执行下一个中间件或路由处理函数
     }

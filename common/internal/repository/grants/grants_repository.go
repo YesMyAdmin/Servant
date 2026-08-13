@@ -3,7 +3,6 @@ package grants
 import (
 	"common/public/database"
 	grantsPo "common/internal/model/po/grants"
-	grantsConst "common/public/consts/grants"
 )
 
 // SelectAll 查询所有权限记录
@@ -19,7 +18,7 @@ func SelectAll() (*[]grantsPo.GrantPO, error) {
 
 // SelectByContentType 根据被授权访问的类型查询权限记录
 // authorizedContentType: 被授权访问的类型，如page/api/file/datatable
-func SelectByContentType(authorizedContentType grantsConst.AuthorizedContentType) (*[]grantsPo.GrantPO, error) {
+func SelectByContentType(authorizedContentType string) (*[]grantsPo.GrantPO, error) {
 	db := database.DB.Model(&grantsPo.GrantPO{}).Where("authorized_content_type = ?", authorizedContentType)
 	var grants []grantsPo.GrantPO
 	err := db.Find(&grants).Error
@@ -32,7 +31,7 @@ func SelectByContentType(authorizedContentType grantsConst.AuthorizedContentType
 // SelectByTargetId 根据授权对象类型和被授权对象id查找权限记录
 // authorizedTargetType: 授权对象类型，如user/role/group
 // authorizedTargetId: 授权对象id
-func SelectByTargetId(authorizedTargetType grantsConst.AuthorizedTargetType, authorizedTargetId string) (*[]grantsPo.GrantPO, error) {
+func SelectByTargetId(authorizedTargetType string, authorizedTargetId string) (*[]grantsPo.GrantPO, error) {
 	db := database.DB.Model(&grantsPo.GrantPO{}).
 		Where("authorized_target_type = ?", authorizedTargetType).
 		Where("authorized_target_id = ?", authorizedTargetId)
