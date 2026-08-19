@@ -6,8 +6,6 @@ import "time"
 type GrantPO struct {
 	GrantId               uint64     `gorm:"column:grant_id;primaryKey;comment:记录id" json:"grantId"`
 	GrantName             string     `gorm:"column:grant_name;type:varchar(32);not null;comment:权限名称" json:"grantName"`
-	AuthorizedTargetType  string     `gorm:"column:authorized_target_type;type:varchar(10);not null;comment:授权对象类型(user/group/maid/logged_in/anonymous/global)" json:"authorizedTargetType"`
-	AuthorizedTargetId    *uint64    `gorm:"column:authorized_target_id;default:null;comment:被授权对象id(用户id或组id,匿名对象/全局设置留空)" json:"authorizedTargetId"`
 	AuthorizedContentType string     `gorm:"column:authorized_content_type;type:varchar(10);not null;comment:被授权访问的类型(page/api/file/datatable)" json:"authorizedContentType"`
 	AuthorizedContent     string     `gorm:"column:authorized_content;type:varchar(128);not null;comment:被授权内容,如GET:/panel/backup/tasks等" json:"authorizedContent"`
 	Enabled               string     `gorm:"column:enabled;type:char(1);not null;default:1;comment:是否启用(1:是 0:否)" json:"enabled"`

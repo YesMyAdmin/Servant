@@ -3,6 +3,9 @@ package user
 import (
 	"common/public/model/entity/grants"
 	"common/public/model/entity/group"
+	userPO "common/internal/model/po/user"
+	grantsPO "common/internal/model/po/grants"
+	groupPO "common/internal/model/po/group"
 	"time"
 )
 
@@ -37,7 +40,7 @@ type User struct {
 	//用户的邀请者id
 	InviterUserId uint64
 	//描述
-	Desc string
+	Description string
 	// DeletedTime 删除时间     
 	DeletedTime           *time.Time
 	// CreateTime 创建时间
@@ -50,4 +53,33 @@ type User struct {
 	Groups *[]group.Group
 	// UserGrants 单独对此用户的授权信息
 	UserGrants *[]grants.Grants 
+}
+
+// LoadFromPO 从用户信息PO加载
+func LoadFromPO(userPO *userPO.UserPO, groupPO *[]groupPO.GroupPO, grantsPO *[]grantsPO.GrantPO ) *User {
+	user := &User{}
+	user.UserId = userPO.UserId
+	user.Name = userPO.Name
+	user.Password = userPO.Password
+	user.Email = userPO.Email
+	user.Phone = userPO.Phone
+	user.FreezeTime = userPO.FreezeTime
+	user.LastActiveTime = userPO.LastActiveTime
+	user.InviterUserId = userPO.InviterUserId
+	user.Description = userPO.Description
+	user.DeletedTime = userPO.DeletedTime
+	user.CreateTime = userPO.CreateTime
+	user.OwnerId = userPO.OwnerId
+	user.UpdateTime = userPO.UpdateTime
+	user.Groups = &[]group.Group{}
+	for _, po := range *groupPO {
+		group := group.LoadFromPO(&po)
+		*user.Groups = append(*user.Groups, *group)
+	}
+	user.UserGrants = &[]grants.Grants{}
+	for _, po := range *grantsPO {
+		grant := grants.LoadFromPO(&po)
+		*user.UserGrants = append(*user.UserGrants, *grant)
+	}
+	return user
 }

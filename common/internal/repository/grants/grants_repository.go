@@ -1,8 +1,8 @@
 package grants
 
 import (
-	"common/public/database"
 	grantsPo "common/internal/model/po/grants"
+	"common/public/database"
 )
 
 // SelectAll 查询所有权限记录
@@ -31,10 +31,13 @@ func SelectByContentType(authorizedContentType string) (*[]grantsPo.GrantPO, err
 // SelectByTargetId 根据授权对象类型和被授权对象id查找权限记录
 // authorizedTargetType: 授权对象类型，如user/role/group
 // authorizedTargetId: 授权对象id
-func SelectByTargetId(authorizedTargetType string, authorizedTargetId string) (*[]grantsPo.GrantPO, error) {
-	db := database.DB.Model(&grantsPo.GrantPO{}).
+func SelectByTargetId(authorizedTargetType string, authorizedTargetId uint64) (*[]grantsPo.GrantPO, error) {
+	db := database.DB.Model(&grantsPo.GrantPO{}).Joins(
+		"granted_targets", 
+		database.DB.Select("grant_id").
 		Where("authorized_target_type = ?", authorizedTargetType).
-		Where("authorized_target_id = ?", authorizedTargetId)
+		Where("authorized_target_id = ?", authorizedTargetId),
+	)
 	var grants []grantsPo.GrantPO
 	err := db.Find(&grants).Error
 	if err != nil {

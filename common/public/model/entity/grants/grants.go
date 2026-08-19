@@ -32,10 +32,6 @@ type Grants struct {
 	GrantId               uint64    
 	// GrantName 授权名称
 	GrantName             string     
-	// AuthorizedTargetType 授权对象类型
-	AuthorizedTargetType  AuthorizedTargetType     
-	// AuthorizedTargetId 被授权对象id
-	AuthorizedTargetId    *uint64    
 	// AuthorizedContentType 被授权访问的类型
 	AuthorizedContentType AuthorizedContentType     
 	// AuthorizedContent 被授权内容
@@ -60,8 +56,6 @@ func LoadFromPO(po *grants.GrantPO) *Grants {
 	return &Grants{
 		GrantId:               po.GrantId,
 		GrantName:             po.GrantName,
-		AuthorizedTargetType:  AuthorizedTargetType(po.AuthorizedTargetType),
-		AuthorizedTargetId:    po.AuthorizedTargetId,
 		AuthorizedContentType: AuthorizedContentType(po.AuthorizedContentType),
 		AuthorizedContent:     po.AuthorizedContent,
 		Enabled:               po.Enabled,
