@@ -1,7 +1,7 @@
 package maids
 
 import (
-	"butler/internal/model/dto"
+	"common/public/model/dto"
 	maiddto "butler/internal/model/dto/maid"
 	"butler/internal/service/maids"
 	"common/public/pkg"

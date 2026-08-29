@@ -1,8 +1,8 @@
 package backup
 
 import (
-	"butler/internal/model/dto/backup"
-	backupsvc "butler/internal/service/backup"
+	"common/public/model/dto/backup"
+	backupsvc "common/public/service/backup"
 	"common/public/pkg"
 	"net/http"
 	"strconv"

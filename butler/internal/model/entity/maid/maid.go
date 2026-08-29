@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"butler/internal/model/dto"
+	"common/public/model/dto"
 	maiddto "butler/internal/model/dto/maid"
 	"butler/internal/model/po/maids"
 )

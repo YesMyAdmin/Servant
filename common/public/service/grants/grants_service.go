@@ -20,7 +20,7 @@ func ListGrants(authorizedContentType grantsEntity.AuthorizedContentType) ([]*gr
 // 根据授权对象类型和被授权对象id查找权限记录
 // authorizedTargetType: 授权对象类型，如user/role/group
 // authorizedTargetId: 授权对象id
-func ListGrantsByTargetId(authorizedTargetType grantsEntity.AuthorizedTargetType, authorizedTargetId string) ([]*grantsEntity.Grants, error) {
+func ListGrantsByTargetId(authorizedTargetType grantsEntity.AuthorizedTargetType, authorizedTargetId uint64) ([]*grantsEntity.Grants, error) {
 	poList, err := grantsRepo.SelectByTargetId(string(authorizedTargetType), authorizedTargetId)
 	if err != nil {
 		return nil, err

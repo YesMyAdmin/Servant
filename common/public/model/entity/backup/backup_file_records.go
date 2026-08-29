@@ -1,10 +1,10 @@
-package entity
+package backup
 
 import (
 	"bufio"
-	"butler/internal/model/dto"
-	backupdto "butler/internal/model/dto/backup"
-	"butler/internal/model/po/backup"
+	"common/public/model/dto"
+	backupdto "common/public/model/dto/backup"
+	backupPO "common/internal/model/po/backup"
 	"io"
 	"os"
 	"time"
@@ -91,8 +91,8 @@ func (b *BackupFileRecord) computeVersionHash() error {
 }
 
 // DumpToPO 将 BackupFile 转换为 BackupRecordPO
-func (b *BackupFileRecord) DumpToPO() *po.BackupRecordPO {
-	return &po.BackupRecordPO{
+func (b *BackupFileRecord) DumpToPO() *backupPO.BackupRecordPO {
+	return &backupPO.BackupRecordPO{
 		BackupRecordId:        b.BackupRecordId,
 		FileId:                b.FileId,
 		FileName:              b.FileName,
@@ -160,7 +160,7 @@ func DumpBackupFileRecordsToRecordResp(entityArray *[]BackupFileRecord) *[]backu
 }
 
 // LoadBackupFileRecordFromPO 将 BackupRecordPO 转换为 BackupFile 实体
-func LoadBackupFileRecordFromPO(por *po.BackupRecordPO) *BackupFileRecord {
+func LoadBackupFileRecordFromPO(por *backupPO.BackupRecordPO) *BackupFileRecord {
 	return &BackupFileRecord{
 		BackupRecordId:        por.BackupRecordId,
 		FileId:                por.FileId,
@@ -183,7 +183,7 @@ func LoadBackupFileRecordFromPO(por *po.BackupRecordPO) *BackupFileRecord {
 }
 
 // 将BackupRecordPO数组转换为BackupFileRecord数组
-func LoadBackupFileRecordFromPOArray(poArray *[]po.BackupRecordPO) *[]BackupFileRecord {
+func LoadBackupFileRecordFromPOArray(poArray *[]backupPO.BackupRecordPO) *[]BackupFileRecord {
 	var entityArray []BackupFileRecord
 	for _, p := range *poArray {
 		entityArray = append(entityArray, *LoadBackupFileRecordFromPO(&p))

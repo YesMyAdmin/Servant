@@ -1,10 +1,10 @@
 package backup
 
 import (
-	dto "butler/internal/model/dto"
-	backupdto "butler/internal/model/dto/backup"
-	entity "butler/internal/model/entity/backup"
-	backupRepo "butler/internal/repository/backup"
+	dto "common/public/model/dto"
+	backupdto "common/public/model/dto/backup"
+	backupEntity "common/public/model/entity/backup"
+	backupRepo "common/internal/repository/backup"
 	"common/public/pkg"
 )
 
@@ -14,8 +14,8 @@ func ListBackupFiles(req *backupdto.ListBackupFileReq) (*pkg.PageableResp[backup
 	if err != nil {
 		return nil, err
 	}
-	backupFiles := entity.LoadBackupFileRecordFromPOArray(backupFilesPO)
-	responses := entity.DumpBackupFileRecordsToResp(backupFiles)
+	backupFiles := backupEntity.LoadBackupFileRecordFromPOArray(backupFilesPO)
+	responses := backupEntity.DumpBackupFileRecordsToResp(backupFiles)
 	return &pkg.PageableResp[backupdto.BackupFileResp]{
 		Total:    totalCount,
 		Pages:    int((totalCount / int64(req.PageSize)) + 1),
@@ -34,8 +34,8 @@ func BackupFileRecords(req *backupdto.ListBackupFileRecordsReq) (*pkg.PageableRe
 	if repoErr != nil {
 		return nil, repoErr
 	}
-	backupFiles := entity.LoadBackupFileRecordFromPOArray(poArrays)
-	responses := entity.DumpBackupFileRecordsToRecordResp(backupFiles)
+	backupFiles := backupEntity.LoadBackupFileRecordFromPOArray(poArrays)
+	responses := backupEntity.DumpBackupFileRecordsToRecordResp(backupFiles)
 	return &pkg.PageableResp[backupdto.BackupRecordResp]{
 		Total:    total,
 		Pages:    int((total / int64(req.PageSize)) + 1),
@@ -50,9 +50,9 @@ func MergeBackupFileRecords(files *[]uint64) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	records := entity.LoadBackupFileRecordFromPOArray(recordsPO)
+	records := backupEntity.LoadBackupFileRecordFromPOArray(recordsPO)
 	//将多个文件并入到最新记录对应的文件中
-	var newestRecord *entity.BackupFileRecord
+	var newestRecord *backupEntity.BackupFileRecord
 	var fileType string
 	for _, record := range *records {
 		if newestRecord == nil || newestRecord.CreateTime.Before(record.CreateTime) {
