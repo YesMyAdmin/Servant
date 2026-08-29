@@ -1,10 +1,44 @@
 package backup
 
 import (
+	backupPO "common/internal/model/po/backup"
+	taskPO "common/internal/model/po/task"
 	"common/public/model/dto"
 	backupdto "common/public/model/dto/backup"
-	backupPO "common/internal/model/po/backup"
+	task "common/public/model/entity/task"
+	"time"
 )
+type BackupTaskMode string
+
+const (
+	// Full 全量模式
+	Full BackupTaskMode = "full"
+	// Backup 备份任务
+	Incremental BackupTaskMode = "incremental"
+)
+
+// BackupTask 备份任务
+type BackupTask struct {
+	//Mode 备份模式
+	Mode BackupTaskMode
+	//Source 需要备份的文件/文件夹路径
+	Source string
+	//任务
+	task.Task
+} 
+
+// 将PO转换为实体
+func LoadBackupTask(po *backupPO.BackupTaskPO) *BackupTask {
+	return &BackupTask{
+		Mode: BackupTaskMode(po.Mode),
+		Source: po.Source,
+		Task: task.Task{
+			TaskId: po.TaskId,
+			TaskName: po.TaskName,
+		},
+	}
+}
+
 
 // ToPO 将 NewBackupTaskReq 转换为 BackupTaskPO
 // 仅映射 PO 中存在的字段：Mode、Source
@@ -22,10 +56,25 @@ func EditReqToPO(r *backupdto.EditBackupTaskReq) *backupPO.BackupTaskPO {
 	if err != nil {
 		return nil
 	}
+	maidId, err := dto.StringToUint64(r.MaidId)
+	if err != nil {
+		return nil
+	}
 	return &backupPO.BackupTaskPO{
-		TaskId: taskId,
 		Mode:   string(r.Mode),
 		Source: r.Source,
+		TaskPO: taskPO.TaskPO{
+			TaskId: taskId,
+			MaidId: maidId,
+			TaskName: r.TaskName,
+			TaskType: string(task.Backup),
+			Trigger: string(task.Cron),
+			Cron: r.Cron,
+			Enabled: r.Enabled,
+			DeletedTime: nil,
+			CreateTime: time.Now(),
+			OwnerId: 0,
+		},
 	}
 }
 

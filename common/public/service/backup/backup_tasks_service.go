@@ -26,9 +26,14 @@ func EditBackupTask(req *backupdto.EditBackupTaskReq) error {
 	return nil
 }
 
-// func GetBackupTask(taskId string) (*backupdto.GetBackupTaskResp, error) {
-// 	return backupRepo.GetBackupTask(req)
-// }
+// 获取备份定时任务详情
+func GetBackupTask(taskId uint64) (*backupEntity.BackupTask, error) {
+	backupTaskPO, err := backupRepo.SelectBackupTask(taskId)
+	if (err != nil) {
+		return nil, err
+	}
+	return backupEntity.LoadBackupTask(backupTaskPO), nil
+}
 
 
 // 查询定时任务

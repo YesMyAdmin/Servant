@@ -31,6 +31,17 @@ func ListTasks(pageNum, pageSize int, taskName string) ([]backupPO.BackupTaskPO,
 	return tasks, total, nil
 }
 
+// 查询备份任务
+func SelectBackupTask(taskId uint64) (*backupPO.BackupTaskPO, error) {
+	db := database.DB.Model(&backupPO.BackupTaskPO{})
+	var task backupPO.BackupTaskPO
+	err := db.Where("task_id = ?", taskId).First(&task).Error
+	if err != nil {
+		return nil, err
+	}
+	return &task, nil
+}
+
 // 添加新的备份任务
 func NewBackupTask(backupTask *backupPO.BackupTaskPO) error {
 	db := database.DB.Model(&backupPO.BackupTaskPO{})

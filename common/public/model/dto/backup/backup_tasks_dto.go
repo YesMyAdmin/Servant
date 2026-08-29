@@ -34,7 +34,7 @@ type EditBackupTaskReq struct {
 	// TaskId 任务ID
 	TaskId string `json:"taskId" binding:"required"`
 	// MaidId 负责执行任务的女仆节点ID
-	MaidId int64 `json:"maidId" binding:"required"`
+	MaidId string `json:"maidId" binding:"required"`
 
 	// TaskName 备份任务名称
 	TaskName string `json:"taskName" binding:"required"`
