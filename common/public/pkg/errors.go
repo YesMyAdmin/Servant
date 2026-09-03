@@ -28,7 +28,7 @@ func (e ServiceError) ErrorResp() ErrorResp {
 func BadArgumentsError(msg string) error {
 	return &ServiceError{
 		response: ErrorResp{
-			Error: "common.bad_arguments",
+			Error: "yes_my_admin.bad_arguments",
 			RaiseTime: time.Now(),
 			HttpResp: HttpResp{
 				Status: http.StatusBadRequest,
@@ -43,7 +43,7 @@ func InternalServerError (msg string) error {
 	slog.Error(msg)
 	return &ServiceError{
 		response: ErrorResp{
-			Error: "common.internal_error",
+			Error: "yes_my_admin.internal_error",
 			RaiseTime: time.Now(),
 			HttpResp: HttpResp{
 				Status: http.StatusInternalServerError,
@@ -61,7 +61,7 @@ func DatabaseError(tableName string, err error) error {
 	slog.Error("Database error occurs", slog.String("tableName", tableName), slog.Any("error", err))
 	return &ServiceError{
 		response: ErrorResp{
-			Error: "common.database_error",
+			Error: "yes_my_admin.database_error",
 			RaiseTime: time.Now(),
 			HttpResp: HttpResp{
 				Status: http.StatusInternalServerError,
@@ -76,7 +76,7 @@ func ConfigUnavailableError(msg string) error {
 	slog.Error(msg)
 	return &ServiceError{
 		response: ErrorResp{
-			Error: "common.config_unavailable",
+			Error: "yes_my_admin.config_unavailable",
 			RaiseTime: time.Now(),
 			HttpResp: HttpResp{
 				Status: http.StatusServiceUnavailable,
@@ -94,10 +94,26 @@ func FileMergingConflictError(files *[]uint64) error {
 	slog.Error(returnMsg, slog.Any("files", files))
 	return &ServiceError{
 		response: ErrorResp{
-			Error: "butler.backup_files.merge_conflict",
+			Error: "yes_my_admin.backup_files.merge_conflict",
 			RaiseTime: time.Now(),
 			HttpResp: HttpResp{
 				Status: http.StatusConflict,
+				Msg: returnMsg,
+			},
+		},
+	}
+}
+
+// 备份任务未找到(404)
+func BackupTaskNotFoundError(taskId uint64) error {
+	returnMsg := "Backup task not found."
+	slog.Error(returnMsg, slog.Uint64("taskId", taskId))
+	return &ServiceError{
+		response: ErrorResp{
+			Error: "yes_my_admin.backup_tasks.not_found",
+			RaiseTime: time.Now(),
+			HttpResp: HttpResp{
+				Status: http.StatusNotFound,
 				Msg: returnMsg,
 			},
 		},
