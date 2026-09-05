@@ -191,7 +191,7 @@ func (s *ScpDumper) Dump(sourcePath, uploadedName string) (*backupEntity.BackupF
 	if credential.User == "" {
 		return nil, errors.New("scp转储用户名不能为空")
 	}
-	host, port, err := parseScpTarget(s.dumpMetadata.UrlTemplate)
+	host, port, remotePath, err := parseScpTarget(s.dumpMetadata.UrlTemplate)
 	if (err != nil) {
 		return nil, err
 	}
@@ -200,11 +200,15 @@ func (s *ScpDumper) Dump(sourcePath, uploadedName string) (*backupEntity.BackupF
 		return nil, err
 	}
 	defer client.Close()
-	//上传到远端用户 home 目录下
-	if err := scpSend(client, sourcePath, uploadedName); err != nil {
+	//上传到 urlTemplate 指定的远端目录
+	if err := scpSend(client, sourcePath, uploadedName, remotePath); err != nil {
 		return nil, err
 	}
-	dumpUrl := fmt.Sprintf("scp://%s@%s/%s", credential.User, net.JoinHostPort(host, port), uploadedName)
+	remoteFile := uploadedName
+	if remotePath != "." && remotePath != "" {
+		remoteFile = strings.TrimRight(remotePath, "/") + "/" + uploadedName
+	}
+	dumpUrl := fmt.Sprintf("scp://%s@%s/%s", credential.User, net.JoinHostPort(host, port), remoteFile)
 	return buildFileRecord(s.dumpMetadata, sourcePath, uploadedName, dumpUrl)
 }
 
@@ -273,21 +277,28 @@ func copyFile(src, dst string) error {
 	return out.Sync()
 }
 
-// parseScpTarget 解析 scp://host[:port] 形式的存储地址
-func parseScpTarget(urlTemplate string) (host, port string, err error) {
+// parseScpTarget 解析 scp://host[:port][/remotePath] 形式的存储地址
+func parseScpTarget(urlTemplate string) (host, port, remotePath string, err error) {
 	u, err := url.Parse(urlTemplate)
 	if (err != nil) {
-		return "", "", err
+		return "", "", "", err
 	}
 	if u.Scheme != "scp" {
-		return "", "", fmt.Errorf("无效的scp存储地址: %s", urlTemplate)
+		return "", "", "", fmt.Errorf("无效的scp存储地址: %s", urlTemplate)
 	}
 	host = u.Hostname()
 	port = u.Port()
 	if port == "" {
 		port = "22"
 	}
-	return host, port, nil
+	remotePath = u.Path
+	if remotePath == "" || remotePath == "/" {
+		// 未指定路径时默认上传到远端 home 目录
+		remotePath = "."
+	} else {
+		remotePath = strings.TrimPrefix(remotePath, "/")
+	}
+	return host, port, remotePath, nil
 }
 
 // dialSSH 使用密钥认证建立ssh连接
@@ -319,8 +330,8 @@ func loadSigner(secret string) (ssh.Signer, error) {
 	return ssh.ParsePrivateKey([]byte(secret))
 }
 
-// scpSend 通过scp协议将本地文件上传到远端 home 目录
-func scpSend(client *ssh.Client, sourcePath, uploadedName string) error {
+// scpSend 通过scp协议将本地文件上传到远端 remotePath 目录
+func scpSend(client *ssh.Client, sourcePath, uploadedName, remotePath string) error {
 	session, err := client.NewSession()
 	if (err != nil) {
 		return err
@@ -334,8 +345,8 @@ func scpSend(client *ssh.Client, sourcePath, uploadedName string) error {
 	if (err != nil) {
 		return err
 	}
-	// scp -t . 表示接收文件到当前目录(home目录)
-	if err := session.Start("scp -t ."); err != nil {
+	// scp -t <remotePath> 表示接收文件到远端指定目录("." 表示 home 目录)
+	if err := session.Start("scp -t " + remotePath); err != nil {
 		return err
 	}
 
