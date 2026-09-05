@@ -2,6 +2,7 @@ package backup
 
 import (
 	backupPO "common/internal/model/po/backup"
+	"encoding/json"
 	"time"
 )
 
@@ -11,8 +12,8 @@ type BackupDumpType string
 const (
 	// Local 本地文件系统
 	Local BackupDumpType = "local"
-	// Scp 异地主机(scp协议连接)
-	Scp BackupDumpType = "scp"
+	// SCP 异地主机(scp协议连接)
+	SCP BackupDumpType = "scp"
 	// S3 对象存储s3协议
 	S3 BackupDumpType = "s3"
 )
@@ -30,9 +31,9 @@ type BackupDump struct {
 	// UrlTemplate 存储位置url模板
 	UrlTemplate string
 	// HoursToLive 保存时间(以小时为单位),过期由定时任务清理文件
-	HoursToLive int32
+	HoursToLive *int32
 	// Credential 认证信息,不同的存储方式有不同的认证信息
-	Credential *string
+	Credential *DumpCredential
 	// Enabled 是否启用
 	Enabled bool
 	// DeletedTime 删除时间
@@ -57,13 +58,33 @@ func LoadBackupDump(po *backupPO.BackupDumpPO) *BackupDump {
 		DumpType:    BackupDumpType(po.DumpType),
 		UrlTemplate: po.UrlTemplate,
 		HoursToLive: po.HoursToLive,
-		Credential:  po.Credential,
+		Credential:  loadCredential(BackupDumpType(po.DumpType), po.Credential),
 		Enabled:     po.Enabled,
 		DeletedTime: po.DeletedTime,
 		CreateTime:  po.CreateTime,
 		OwnerId:     po.OwnerId,
 		UpdateTime:  po.UpdateTime,
 	}
+}
+
+// loadCredential 根据存储类型将 JSON 字符串解析为对应的认证信息
+func loadCredential(dumpType BackupDumpType, raw *string) *DumpCredential {
+	if raw == nil {
+		return nil
+	}
+	var credential DumpCredential
+	switch dumpType {
+	case SCP:
+		credential = &SCPDumpCredential{}
+	case S3:
+		credential = &S3DumpCredential{}
+	default:
+		credential = &LocalDumpCredential{}
+	}
+	if jsonError := json.Unmarshal([]byte(*raw), credential); jsonError != nil {
+		return nil
+	}
+	return &credential
 }
 
 // LoadBackupDumpArray 将 BackupDumpPO 切片转换为 BackupDump 实体切片
@@ -82,6 +103,14 @@ func (d *BackupDump) ToPO() *backupPO.BackupDumpPO {
 	if d == nil {
 		return nil
 	}
+	bytes, jsonError := json.Marshal(d.Credential)
+	var credential string
+	if (jsonError != nil) {
+		credential = ""
+	} else {
+		//转为UTF8字符串
+		credential = string(bytes)
+	}
 	return &backupPO.BackupDumpPO{
 		DumpId:      d.DumpId,
 		DumpName:    d.DumpName,
@@ -89,11 +118,47 @@ func (d *BackupDump) ToPO() *backupPO.BackupDumpPO {
 		DumpType:    string(d.DumpType),
 		UrlTemplate: d.UrlTemplate,
 		HoursToLive: d.HoursToLive,
-		Credential:  d.Credential,
+		Credential:  &credential,
 		Enabled:     d.Enabled,
 		DeletedTime: d.DeletedTime,
 		CreateTime:  d.CreateTime,
 		OwnerId:     d.OwnerId,
 		UpdateTime:  d.UpdateTime,
 	}
+}
+
+// 转储目标认证方式
+type DumpCredential interface {
+	DumpType() BackupDumpType
+}
+
+// 本地转储认证方式(其实是空的)
+type LocalDumpCredential struct {
+}
+
+func (c *LocalDumpCredential) DumpType() BackupDumpType {
+	return Local
+}
+
+type SCPDumpCredential struct {
+	// 用户名(不使用root,如果输入"root",前后端报错拒绝)
+	User string `json:"user"`
+	// ssh登录密钥/证书,支持填写密钥原文和文件路径
+	// 若使用原文,则数据库端加密,不返回给前端
+	Secret string `json:"secret"`
+}
+
+func (c *SCPDumpCredential) DumpType() BackupDumpType {
+	return SCP
+}
+
+type S3DumpCredential struct {
+	// keyId
+	AccessKeyId string `json:"accessKeyId"`
+	// 访问密钥,数据库端加密,不返回给前端
+	AccessKey string `json:"accessKey"`
+}
+
+func (c *S3DumpCredential) DumpType() BackupDumpType {
+	return S3
 }
