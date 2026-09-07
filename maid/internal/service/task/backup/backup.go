@@ -18,21 +18,13 @@ import (
 	backupEntity "common/public/model/entity/backup"
 	backupsvc "common/public/service/backup"
 	"common/public/utils"
-	"maid/internal/task"
+	"maid/internal/service/task"
 
-	"github.com/go-co-op/gocron"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"golang.org/x/crypto/ssh"
 )
 
-// RegisterTask 注册任务
-func RegisterTask(cron string) {
-	timezone, _ := time.LoadLocation("Asia/Shanghai")
-	scheduler := gocron.NewScheduler(timezone)
-	scheduler.Cron(cron).Do(func() {
-	})
-}
 
 // DoBackup 执行备份任务
 func DoBackup(taskId uint64) error {
