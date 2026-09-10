@@ -1,6 +1,9 @@
 package backup
 
 import (
+	backupEntity "common/public/model/entity/backup"
+	backupsvc "common/public/service/backup"
+	"common/public/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -15,16 +18,11 @@ import (
 	"sync"
 	"time"
 
-	backupEntity "common/public/model/entity/backup"
-	backupsvc "common/public/service/backup"
-	"common/public/utils"
-	"maid/internal/service/task"
-
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/panjf2000/ants/v2"
 	"golang.org/x/crypto/ssh"
 )
-
 
 // DoBackup 执行备份任务
 func DoBackup(taskId uint64) error {
@@ -45,6 +43,7 @@ func DoBackup(taskId uint64) error {
 	}
 
 	if (backupTask.Mode == backupEntity.Full) {
+		//全量备份模式
 		err := fullBackup(backupTask, dumpers)
 		if (err != nil) {
 			return err
@@ -57,7 +56,7 @@ func DoBackup(taskId uint64) error {
 
 // fullBackup 全量备份
 func fullBackup(backupTask *backupEntity.BackupTask, dumpers []BackupDumper) error {
-	taskPool, err := task.NewTaskPool()
+	taskPool, err := NewTaskPool()
 	if (err != nil) {
 		return err
 	}
@@ -442,4 +441,40 @@ func parseS3Target(urlTemplate string) (endpoint, bucket, prefix string, err err
 	prefix = strings.Join(segments[1:], "/")
 	endpoint = u.Scheme + "://" + u.Host
 	return endpoint, bucket, prefix, nil
+}
+
+const (
+	POOL_SIZE = 8
+)
+
+var taskPool *AsyncPool = nil
+
+
+// AsyncPool 任务执行池
+type AsyncPool struct{
+	pool *ants.Pool
+}
+
+// 关闭任务池
+func (pool *AsyncPool) Destructor() {
+	pool.pool.Release()
+	pool = nil
+}
+
+// 提交一个异步任务
+func (pool *AsyncPool) Submit(task func()) {
+	pool.pool.Submit(task)
+}
+
+// 获取一个任务池单例
+func NewTaskPool() (*AsyncPool, error) {
+	if (nil != taskPool) {
+		return taskPool, nil
+	}
+	pool, err := ants.NewPool(POOL_SIZE)
+	if (err != nil) {
+		return nil, err
+	}
+	taskPool = &AsyncPool{pool: pool}
+	return taskPool, nil
 }
